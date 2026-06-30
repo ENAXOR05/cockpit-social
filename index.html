@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cockpit Social — UCAR Semécourt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2330;
+    --ink-soft:#3A4250;
+    --paper:#F2EFE9;
+    --card:#FFFFFF;
+    --line:#E4DFD6;
+    --muted:#8A8F98;
+    --accent:#FF6B4A;       /* coral – été / action */
+    --accent-press:#E85534;
+    --go:#15A06B;           /* validé */
+    --go-soft:#E5F4EE;
+    --pub:#5B6472;          /* publié */
+    --fb:#1877F2;
+    --ig:#C13584;
+    --li:#0A66C2;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(27,35,48,.06),0 8px 24px rgba(27,35,48,.07);
+    --display:"Bricolage Grotesque", system-ui, sans-serif;
+    --body:"Inter", system-ui, sans-serif;
+    --mono:"DM Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 64px;
+    line-height:1.45;
+  }
+  .wrap{max-width:620px;margin:0 auto;padding:0 16px}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:22px 0 14px;
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(var(--paper) 78%, rgba(242,239,233,0));
+  }
+  .brandrow{display:flex;align-items:center;gap:11px}
+  .mark{
+    width:40px;height:40px;border-radius:11px;flex:none;
+    background:var(--ink);color:#fff;display:grid;place-items:center;
+    font-family:var(--display);font-weight:800;font-size:19px;
+    box-shadow:var(--shadow);
+  }
+  .brandtext h1{
+    font-family:var(--display);font-weight:800;font-size:18px;
+    margin:0;letter-spacing:-.01em;line-height:1.05;
+  }
+  .brandtext p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+  .stripe{height:3px;border-radius:3px;margin-top:13px;
+    background:repeating-linear-gradient(90deg,var(--accent) 0 18px,transparent 18px 30px)}
+
+  /* ---------- Next-up banner ---------- */
+  .nextup{
+    margin:16px 0 6px;background:var(--ink);color:#fff;
+    border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  .nextup .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:#FFB7A6;margin:0 0 6px}
+  .nextup h2{font-family:var(--display);font-weight:700;font-size:17px;margin:0 0 3px;line-height:1.15}
+  .nextup .when{font-family:var(--mono);font-size:12.5px;color:#C9CDD4;margin-top:4px}
+  .nextup .plane{position:absolute;right:-6px;top:-8px;font-size:64px;opacity:.10;transform:rotate(-18deg)}
+
+  /* ---------- Filter chips ---------- */
+  .chips{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+  .chip{
+    font-family:var(--mono);font-size:12px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink-soft);padding:7px 12px;border-radius:999px;
+    cursor:pointer;transition:.15s;
+  }
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---------- Ticket card ---------- */
+  .ticket{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    margin:12px 0;overflow:hidden;border:1px solid var(--line);
+  }
+  .thead{display:flex;align-items:stretch;cursor:pointer}
+  .stub{
+    flex:none;width:74px;background:var(--paper);
+    border-right:2px dashed var(--line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:12px 6px;text-align:center;position:relative;
+  }
+  .stub .d{font-family:var(--display);font-weight:800;font-size:24px;line-height:1}
+  .stub .m{font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .stub .t{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:7px}
+  .tbody{flex:1;padding:12px 14px;min-width:0}
+  .ttype{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:500}
+  .ttitle{font-family:var(--display);font-weight:700;font-size:15.5px;margin:3px 0 7px;letter-spacing:-.01em;line-height:1.18}
+  .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .nets{display:flex;gap:5px}
+  .ndot{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700;font-family:var(--display)}
+  .nf{background:var(--fb)} .ni{background:var(--ig)} .nl{background:var(--li)}
+  .stamp{
+    font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 8px;border-radius:6px;font-weight:500;
+  }
+  .s-todo{background:#FFE9E3;color:var(--accent-press)}
+  .s-ok{background:var(--go-soft);color:var(--go)}
+  .s-pub{background:#EEF0F3;color:var(--pub)}
+  .prio{font-size:10px;font-family:var(--mono);letter-spacing:.06em;color:#fff;background:var(--accent);padding:3px 7px;border-radius:6px;text-transform:uppercase}
+  .caret{flex:none;align-self:center;padding:0 12px;color:var(--muted);font-size:13px;transition:transform .2s}
+  .ticket.open .caret{transform:rotate(180deg)}
+
+  /* ---------- Expanded body ---------- */
+  .detail{display:none;border-top:1px dashed var(--line);padding:14px}
+  .ticket.open .detail{display:block}
+  .tabs{display:flex;gap:6px;margin-bottom:10px}
+  .tab{font-family:var(--mono);font-size:12px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .field-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  textarea,.txt{
+    width:100%;font-family:var(--body);font-size:14px;color:var(--ink);line-height:1.5;
+    border:1px solid var(--line);border-radius:11px;padding:11px;background:#fff;resize:vertical;
+  }
+  textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+  .hashbox{font-family:var(--mono);font-size:12.5px;color:var(--li);background:#F3F7FC;border:1px solid #DCE8F6;border-radius:10px;padding:10px;word-break:break-word}
+  .visual{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:12px;font-size:13px;white-space:pre-wrap;color:var(--ink-soft);line-height:1.55}
+
+  /* ---------- Action buttons ---------- */
+  .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .btn{
+    font-family:var(--body);font-weight:600;font-size:13.5px;border:none;border-radius:11px;
+    padding:11px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.13s;
+  }
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .btn:active{transform:translateY(1px)}
+  .b-copy{background:var(--ink);color:#fff;flex:1;justify-content:center;min-width:130px}
+  .b-open{color:#fff;justify-content:center}
+  .o-fb{background:var(--fb)} .o-ig{background:var(--ig)} .o-li{background:var(--li)}
+  .b-ok{background:var(--go);color:#fff}
+  .b-pub{background:var(--paper);color:var(--ink-soft);border:1px solid var(--line)}
+  .opens{display:flex;gap:7px;margin-top:8px}
+  .opens .b-open{flex:1}
+
+  /* ---------- Guide Claude ---------- */
+  .guide{margin-top:16px;background:#FFF7F4;border:1px solid #FBD9CE;border-radius:12px;padding:12px}
+  .guide .field-label{color:var(--accent-press);margin-top:0}
+  .guide-row{display:flex;gap:8px;margin-top:7px}
+  .guide-row input{flex:1;font-family:var(--body);font-size:13.5px;border:1px solid #F3C9BC;border-radius:10px;padding:10px;background:#fff}
+  .guide-row input:focus{outline:2px solid var(--accent);outline-offset:0}
+  .guide .btn{background:var(--accent);color:#fff;white-space:nowrap}
+  .guide-hint{font-size:11.5px;color:var(--muted);margin-top:7px}
+
+  /* ---------- Footer / notif ---------- */
+  .toolbar{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+  .toolbar .btn{background:var(--card);border:1px solid var(--line);color:var(--ink-soft);font-weight:500;font-size:12.5px}
+  .note{font-size:11.5px;color:var(--muted);text-align:center;margin:22px 0 0;line-height:1.6}
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:11px 18px;border-radius:999px;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brandrow">
+      <div class="mark">US</div>
+      <div class="brandtext">
+        <h1>Cockpit Social</h1>
+        <p>UCAR Semécourt · gère tes publis en 10 min/semaine</p>
+      </div>
+    </div>
+    <div class="stripe"></div>
+  </header>
+
+  <div id="nextup"></div>
+
+  <div class="chips" id="chips">
+    <button class="chip" data-f="all" aria-pressed="true">Tout</button>
+    <button class="chip" data-f="À valider" aria-pressed="false">À valider</button>
+    <button class="chip" data-f="Validé" aria-pressed="false">Validé</button>
+    <button class="chip" data-f="Publié" aria-pressed="false">Publié</button>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="toolbar">
+    <button class="btn" id="notifBtn">🔔 M'avertir des publis du jour</button>
+    <button class="btn" id="resetBtn">↺ Réinitialiser</button>
+  </div>
+
+  <p class="note">
+    Publication = <b>Copier</b> puis <b>Ouvrir le réseau</b> et coller (~20 s).<br>
+    Pour du « ça se publie tout seul » : programme via Meta Business Suite.<br>
+    Tes modifs sont sauvegardées automatiquement sur cet appareil.
+  </p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TODAY = new Date('2026-06-30');
+const KEY = 'arx_cockpit_v4';
+
+// ---------- Seed data ----------
+const SEED = [
+  {
+    id:'minibus',
+    date:'2026-06-30', day:'LUN', mois:'JUIN', heure:'18:30',
+    type:'Offre · Minibus', prio:true,
+    title:'Minibus 9 places : –20 % tout l\'été',
+    nets:['fb','ig','li'], status:'À valider',
+    cta:'Réservez votre minibus : message ou ☎️ 03 87 80 70 60',
+    hashtags:'#UCARSemecourt #Semecourt #Metz #Moselle #Lorraine #LocationMinibus #Minibus9Places #Été2026 #LocationVehicule #Thionville',
+    fb:`🚐 L'été, c'est toujours mieux à plusieurs !
+
+Du 15 juillet au 1er septembre, profitez de –20 % sur la location de notre minibus 9 places chez UCAR Semécourt.
+
+Un mariage, un EVJF/EVG, une virée à Europa-Park, un festival, une journée à la plage ou en famille ? Un seul véhicule, tout le monde ensemble, et les frais divisés. 😎
+
+Les places de l'été partent vite — réservez votre minibus dès maintenant par message ou au ☎️ 03 87 80 70 60.
+
+UCAR Semécourt — la location simple et au juste prix, près de chez vous.`,
+    ig:`🚐☀️ –20 % sur le minibus 9 places, tout l'été !
+📅 Du 15/07 au 01/09
+
+Mariage • EVJF/EVG • Europa-Park • festival • plage entre potes 🎉
+1 véhicule, toute la team ensemble, les frais divisés.
+
+📩 Réservez en DM ou ☎️ 03 87 80 70 60 — les places de l'été partent vite !`,
+    li:`Sortie d'équipe, séminaire ou transport de collaborateurs cet été ?
+
+Du 15 juillet au 1er septembre, UCAR Semécourt propose –20 % sur la location de son minibus 9 places. Idéal pour vos déplacements de groupe, en toute simplicité et au juste prix.
+
+Réservez dès maintenant pour sécuriser vos dates : ☎️ 03 87 80 70 60.`,
+    visual:`📸 PHOTO RÉELLE (préférée) :
+• Quoi : votre minibus 9 places, lavé et propre.
+• Où : devant l'agence, enseigne visible derrière.
+• Angle : 3/4 avant, porte latérale ouverte (on voit les sièges).
+• Lumière : 19h-20h (lumière dorée) — éviter le plein soleil de midi.
+• Bonus : un petit groupe souriant qui charge des bagages.
+• Format : 1 horizontale (FB) + 1 verticale (Story/Reel).
+
+🤖 PROMPT IA (si pas de photo) — à coller tel quel :
+"Photorealistic editorial photo, white 9-seater passenger minibus parked outside, summer golden hour light, sliding side door open showing clean seats, a few travel bags beside it, joyful summer group-trip mood, soft natural shadows, shallow depth of field, ultra realistic, 35mm, natural colors. No text, no logos, no brand badges, no visible faces."`
+  },
+  {
+    id:'p1',
+    date:'2026-07-08', day:'MAR', mois:'JUIL', heure:'12:30',
+    type:'Contenu valeur · Carrousel', prio:false,
+    title:'Quel véhicule pour quel été ?',
+    nets:['fb','ig'], status:'À valider',
+    cta:'Vous partez où cet été ? Dites-le en commentaire 👇',
+    hashtags:'#UCARSemecourt #Semecourt #Metz #Moselle #LocationVoiture #Vacances2026 #Lorraine #LocationUtilitaire',
+    fb:`🚗 Citadine, familiale ou utilitaire : quel véhicule pour votre été ?
+
+• En ville / petits trajets → la citadine, maligne et économique.
+• Départ en vacances en famille → le break ou le SUV, spacieux et confortable.
+• Gros achats, brico, déménagement → l'utilitaire, votre meilleur allié.
+
+Chez UCAR Semécourt, il y a forcément le véhicule de votre besoin. 😉
+
+Vous partez où cet été ? Dites-le nous en commentaire 👇`,
+    ig:`Quel véhicule pour quel été ? 🚗☀️
+
+Ville → citadine · Vacances → familiale · Gros achats → utilitaire
+
+Il y en a forcément un pour vous chez UCAR Semécourt 😉
+Vous partez où cet été ? 👇`,
+    li:'',
+    visual:`🤖 Carrousel concept en 3 visuels IA (1 par véhicule), même style cohérent.
+Prompt visuel 1 (citadine) — à coller :
+"Photorealistic editorial photo of a small compact city car on a sunny European city street, summer light, clean modern look, shallow depth of field, ultra realistic, 35mm. No text, no logos, no brand badges, no faces."
+(Je te fournis les prompts 2 et 3 — familiale & utilitaire — dès validation du planning.)`
+  },
+  {
+    id:'p2',
+    date:'2026-07-10', day:'JEU', mois:'JUIL', heure:'18:30',
+    type:'Offre · Véhicule + Reel', prio:true,
+    title:'Partez l\'esprit tranquille ce week-end',
+    nets:['fb','ig'], status:'À valider',
+    cta:'Réservez votre week-end en message 📩',
+    hashtags:'#UCARSemecourt #Semecourt #Metz #Vacances2026 #LocationVoiture #DepartEnVacances #Moselle #Lorraine',
+    fb:`🧳 Partez l'esprit tranquille ce week-end.
+
+Plutôt que d'user votre propre voiture sur des centaines de kilomètres, prenez le départ avec un véhicule spacieux et fiable — coffre XXL, confort, tranquillité.
+
+✅ Dispo ce week-end chez UCAR Semécourt.
+📩 Réservez votre départ, envoyez-nous un message !`,
+    ig:`🧳☀️ Votre véhicule de vacances vous attend.
+Coffre XXL, confort, zéro stress. Dispo ce week-end !
+
+📩 Réservez en DM`,
+    li:'',
+    visual:`📸 PHOTO RÉELLE (indispensable ici — c'est la confiance qui vend) :
+• Quoi : votre véhicule familial le plus présentable (break/SUV/monospace), lavé.
+• Où : devant l'agence, enseigne UCAR derrière.
+• Angle : 3/4 avant, léger contre-plongée (à hauteur de phare).
+• Lumière : 19h-20h ou tôt le matin.
+• Mise en scène : coffre OUVERT sur une photo (montrer l'espace).
+• Format : horizontale (FB) + verticale (Reel : extérieur → coffre → tableau de bord → clés en main, 15 s).
+
+⚠️ À shooter avant mercredi soir.`
+  },
+  {
+    id:'p3',
+    date:'2026-07-12', day:'SAM', mois:'JUIL', heure:'10:30',
+    type:'Humain · Preuve sociale', prio:false,
+    title:'Ce qu\'on préfère : vous voir partir le sourire aux lèvres',
+    nets:['fb','ig'], status:'À valider',
+    cta:'Pour quelle occasion auriez-vous besoin d\'un véhicule ? 👇',
+    hashtags:'#UCARSemecourt #Semecourt #Metz #Proximite #LocationVoiture #Moselle #Lorraine #JustePrix',
+    fb:`🔑 Ce qu'on préfère ? Vous voir partir le sourire aux lèvres.
+
+Chez UCAR Semécourt, on mise sur la simplicité, la proximité et le juste prix. Un véhicule propre, des démarches rapides, et vous voilà parti.
+
+Et vous, pour quelle occasion auriez-vous besoin d'un véhicule cet été ? 👇`,
+    ig:`🔑 Simple, proche, au juste prix.
+C'est ça, UCAR Semécourt 💛
+
+Pour quelle occasion auriez-vous besoin d'un véhicule ? 👇`,
+    li:'',
+    visual:`📸 PHOTO RÉELLE — remise de clés :
+• Une main qui tend les clés à un client (cadrage serré sur les mains + clés).
+• Lumière naturelle, fond agence légèrement flou.
+• Alternative : une vraie capture d'avis client (5★) mise en visuel propre.`
+  }
+];
+
+const NET = {fb:{c:'nf',n:'F',label:'Facebook',o:'o-fb',url:'https://www.facebook.com/'},
+             ig:{c:'ni',n:'I',label:'Instagram',o:'o-ig',url:'https://www.instagram.com/'},
+             li:{c:'nl',n:'in',label:'LinkedIn',o:'o-li',url:'https://www.linkedin.com/feed/'}};
+
+let DATA = [];
+let filter = 'all';
+const openTabs = {}; // id -> net key
+
+// ---------- storage ----------
+async function load(){
+  try{
+    if(window.storage){
+      const r = await window.storage.get(KEY);
+      if(r && r.value){ DATA = JSON.parse(r.value); return; }
+    }
+  }catch(e){ /* first run / not available */ }
+  DATA = JSON.parse(JSON.stringify(SEED));
+  save();
+}
+async function save(){
+  try{ if(window.storage){ await window.storage.set(KEY, JSON.stringify(DATA), false); } }catch(e){}
+}
+
+// ---------- helpers ----------
+function fmtDate(iso){
+  const d = new Date(iso);
+  const diff = Math.round((d - TODAY)/86400000);
+  if(diff===0) return "aujourd'hui";
+  if(diff===1) return "demain";
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'),1900);
+}
+function copy(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast('Copié ✓')).catch(()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);
+  ta.select();try{document.execCommand('copy');toast('Copié ✓');}catch(e){toast('Copie impossible');}
+  document.body.removeChild(ta);
+}
+
+// ---------- render ----------
+function nextUp(){
+  const up = DATA.filter(p=>p.status!=='Publié').sort((a,b)=>a.date.localeCompare(b.date))[0];
+  const el = document.getElementById('nextup');
+  if(!up){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="nextup">
+    <span class="plane">🚐</span>
+    <p class="eyebrow">Prochaine publication</p>
+    <h2>${esc(up.title)}</h2>
+    <div class="when">${fmtDate(up.date)} · ${up.heure} · ${up.nets.map(n=>NET[n].label).join(' + ')}</div>
+  </div>`;
+}
+
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function render(){
+  nextUp();
+  const list = document.getElementById('list');
+  const items = DATA.filter(p=>filter==='all'||p.status===filter)
+                    .sort((a,b)=>a.date.localeCompare(b.date));
+  if(!items.length){ list.innerHTML=`<p class="note">Rien ici pour ce filtre.</p>`; return; }
+  list.innerHTML = items.map(card).join('');
+}
+
+function statusStamp(s){
+  if(s==='Validé') return `<span class="stamp s-ok">Validé</span>`;
+  if(s==='Publié') return `<span class="stamp s-pub">Publié</span>`;
+  return `<span class="stamp s-todo">À valider</span>`;
+}
+
+function card(p){
+  const active = openTabs[p.id] || p.nets[0];
+  const tabs = p.nets.map(n=>`<button class="tab" data-tab="${p.id}|${n}" role="tab" aria-selected="${n===active}">${NET[n].label}</button>`).join('');
+  const text = p[active]||'(version non rédigée pour ce réseau)';
+  const opens = p.nets.map(n=>`<button class="btn b-open ${NET[n].o}" data-open="${NET[n].url}">↗ ${NET[n].label}</button>`).join('');
+  return `<article class="ticket" data-id="${p.id}">
+    <div class="thead" data-toggle="${p.id}">
+      <div class="stub">
+        <span class="d">${new Date(p.date).getDate()}</span>
+        <span class="m">${p.mois}</span>
+        <span class="t">${p.heure}</span>
+      </div>
+      <div class="tbody">
+        <div class="ttype">${esc(p.type)}</div>
+        <div class="ttitle">${esc(p.title)}</div>
+        <div class="meta">
+          <div class="nets">${p.nets.map(n=>`<span class="ndot ${NET[n].c}">${NET[n].n}</span>`).join('')}</div>
+          ${p.prio?`<span class="prio">Prioritaire</span>`:''}
+          ${statusStamp(p.status)}
+        </div>
+      </div>
+      <div class="caret">▾</div>
+    </div>
+    <div class="detail">
+      <div class="tabs" role="tablist">${tabs}</div>
+      <div class="field-label">Texte (modifiable)</div>
+      <textarea data-edit="${p.id}|${active}" rows="7">${esc(text)}</textarea>
+      <div class="field-label">Appel à l'action</div>
+      <div class="txt">${esc(p.cta)}</div>
+      <div class="field-label">Hashtags</div>
+      <div class="hashbox">${esc(p.hashtags)}</div>
+      <div class="field-label">Visuel à préparer</div>
+      <div class="visual">${esc(p.visual)}</div>
+
+      <div class="actions">
+        <button class="btn b-copy" data-copy="${p.id}|${active}">📋 Copier (texte + hashtags)</button>
+        ${p.status!=='Validé'?`<button class="btn b-ok" data-ok="${p.id}">✓ Valider</button>`:''}
+        <button class="btn b-pub" data-pub="${p.id}">${p.status==='Publié'?'✓ Publié':'Marquer publié'}</button>
+      </div>
+      <div class="opens">${opens}</div>
+
+      <div class="guide">
+        <div class="field-label">Guider Claude (sans pavé)</div>
+        <div class="guide-row">
+          <input type="text" data-guideinput="${p.id}" placeholder="ex : raccourcis · ajoute le prix 89 € · ton plus fun">
+          <button class="btn" data-guide="${p.id}">Copier la consigne</button>
+        </div>
+        <div class="guide-hint">Ta consigne est copiée → colle-la dans le chat, je régénère cette publi.</div>
+      </div>
+    </div>
+  </article>`;
+}
+
+// ---------- events (delegated) ----------
+document.addEventListener('click', e=>{
+  const t = e.target.closest('[data-toggle],[data-tab],[data-copy],[data-ok],[data-pub],[data-open],[data-guide]');
+  if(!t) return;
+
+  if(t.dataset.toggle){
+    if(e.target.closest('.detail')) return;
+    const art = t.closest('.ticket'); art.classList.toggle('open'); return;
+  }
+  if(t.dataset.tab){
+    const [id,net] = t.dataset.tab.split('|'); openTabs[id]=net;
+    const art = t.closest('.ticket'); render();
+    document.querySelector(`.ticket[data-id="${id}"]`)?.classList.add('open');
+    return;
+  }
+  if(t.dataset.copy){
+    const [id,net] = t.dataset.copy.split('|');
+    const p = DATA.find(x=>x.id===id);
+    copy((p[net]||'') + '\n\n' + p.hashtags); return;
+  }
+  if(t.dataset.ok){
+    const p = DATA.find(x=>x.id===t.dataset.ok); p.status='Validé'; save(); render();
+    document.querySelector(`.ticket[data-id="${p.id}"]`)?.classList.add('open'); toast('Validé ✓'); return;
+  }
+  if(t.dataset.pub){
+    const p = DATA.find(x=>x.id===t.dataset.pub);
+    p.status = p.status==='Publié' ? 'Validé' : 'Publié'; save(); render();
+    document.querySelector(`.ticket[data-id="${p.id}"]`)?.classList.add('open'); return;
+  }
+  if(t.dataset.open){ window.open(t.dataset.open,'_blank','noopener'); return; }
+  if(t.dataset.guide){
+    const id = t.dataset.guide;
+    const p = DATA.find(x=>x.id===id);
+    const net = openTabs[id]||p.nets[0];
+    const inp = document.querySelector(`[data-guideinput="${id}"]`);
+    const instr = (inp.value||'').trim();
+    if(!instr){ inp.focus(); toast('Écris ta consigne d\'abord'); return; }
+    copy(`[Modif Cockpit] Publi : « ${p.title} » · Réseau : ${NET[net].label}\nConsigne : ${instr}`);
+    inp.value='';
+    return;
+  }
+});
+
+document.addEventListener('input', e=>{
+  if(e.target.dataset.edit){
+    const [id,net] = e.target.dataset.edit.split('|');
+    const p = DATA.find(x=>x.id===id); p[net]=e.target.value; save();
+  }
+});
+
+document.getElementById('chips').addEventListener('click', e=>{
+  const c = e.target.closest('.chip'); if(!c) return;
+  filter = c.dataset.f;
+  [...document.querySelectorAll('.chip')].forEach(x=>x.setAttribute('aria-pressed', x===c));
+  render();
+});
+
+document.getElementById('resetBtn').addEventListener('click', async ()=>{
+  if(confirm('Réinitialiser toutes les publications aux versions d\'origine ? Tes modifs seront perdues.')){
+    DATA = JSON.parse(JSON.stringify(SEED)); await save(); render(); toast('Réinitialisé');
+  }
+});
+
+document.getElementById('notifBtn').addEventListener('click', async ()=>{
+  if(!('Notification' in window)){ toast('Notifs non supportées ici'); return; }
+  let perm = Notification.permission;
+  if(perm!=='granted'){ perm = await Notification.requestPermission(); }
+  if(perm==='granted'){
+    const due = DATA.filter(p=>p.status!=='Publié').sort((a,b)=>a.date.localeCompare(b.date))[0];
+    if(due){ new Notification('À publier — '+fmtDate(due.date), {body:due.title+' · '+due.heure}); }
+    toast('Tu seras averti à l\'ouverture de l\'appli ✓');
+  } else { toast('Notifs refusées'); }
+});
+
+// ---------- init ----------
+(async ()=>{ await load(); render(); })();
+</script>
+</body>
+</html>
